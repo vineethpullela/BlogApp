@@ -1,0 +1,30 @@
+.editor-container {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.editor-container ngx-editor-menu {
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.editor-container ngx-editor {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .editor-container .NgxEditor,
+:host ::ng-deep .editor-container .NgxEditor__Content,
+:host ::ng-deep .editor-container .ProseMirror {
+  width: 100% !important;
+  min-height: 200px;
+  outline: none;
+  box-sizing: border-box;
+}

@@ -1,0 +1,62 @@
+<div class="row justify-content-center">
+  <div class="col-lg-9 col-xl-8">
+    <div class="mb-4">
+      <h2 class="fw-bold">Create a Blog post</h2>
+      <p class="text-muted">Share you thoughts with the community</p>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <form [formGroup]="postForm" (ngSubmit)="addpost()">
+          <!-- Role   -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Role</label>
+            <input type="hidden" formControlName="roleid">
+            <input id="rolname" type="text" class="form-control" [value]="roleName" readonly>
+          </div>
+
+          <!-- Title -->
+          <div class="mb-4">
+            <label for="title" class="form-label fw-semibold">Title</label>
+            <input type="text" class="form-control" formControlName="title" maxlength="150"
+              placeholder="Enter your post title">
+            <div class="invalid-feedback d-block"
+              *ngIf="postForm.get('title')?.invalid && (postForm.get('title')?.touched || postForm.get('title')?.dirty)">
+              Please enter title</div>
+          </div>
+
+
+
+          <!-- description -->
+          <div class="mb-4">
+            <label for="description" class="form-label fw-semibold">Description</label>
+            <div class="editor-container w-100">
+              <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+              <ngx-editor [editor]="editor" formControlName="description" placeholder="Write Your post here..."
+                [disabled]="saving"></ngx-editor>
+
+                 <div class="invalid-feedback d-block"
+              *ngIf="postForm.get('description')?.invalid && (postForm.get('description')?.touched || postForm.get('description')?.dirty)">
+              Please enter a description</div>
+          </div>
+            </div>
+           
+
+          <!-- Error Message -->
+
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{errorMessage}}
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="cancel()"
+              [disabled]="saving">Cancel</button>
+            <button type="submit" class="btn btn-primary">{{saving? 'Saving.....':'Add Post'}}</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
