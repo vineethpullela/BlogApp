@@ -3,36 +3,135 @@
     <p class="text-muted">Discover posts from our community.</p>
 </div>
 
-
-
+<!-- Loading State -->
 <div *ngIf="loading" class="text-center py-5">
-    Loading posts.....
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="text-muted mt-2">Loading posts.....</p>
 </div>
 
+<!-- Error Alert -->
 <div *ngIf="errorMessage" class="alert alert-danger">
     {{errorMessage}}
 </div>
 
-<div *ngIf="!loading && !errorMessage && posts.length===0" class="alert alert-light border">
-    NoPost yet. Click Add post to create the first one
+<!-- Empty State -->
+<div *ngIf="!loading && !errorMessage && (!posts || posts.length === 0)" class="alert alert-light border">
+    No posts yet. Click Add Post to create the first one.
 </div>
 
-<div class="row g-4" *ngIf="!loading">
+<!-- Posts List -->
+<div class="row g-4" *ngIf="!loading && posts && posts.length > 0">
     <div class="col-12" *ngFor="let post of posts">
         <article class="card shadow-sm">
             <div class="card-body">
+                <!-- Post Meta (Role & Date) -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="badge bg-secondary">
-                        {{post.roleName}}
+                        {{post.roleName || 'Anonymous'}}
                     </span>
 
                     <small class="text-muted">
                         {{post.createdAt | date: 'mediumDate'}}
                     </small>
                 </div>
+
+                <!-- Post Title -->
                 <h3 class="card-title mb-2">{{post.title}}</h3>
-                <div class="post-description" [innerHTML]="getSafeHtml(post.description)"></div>
+
+                <!-- Post Rich Content/Description -->
+                <div class="post-description mb-3" [innerHTML]="getSafeHtml(post.description)"></div>
+
+                
+                <!-- Post Media Section — small icon thumbnails -->
+                <div class="post-media-section pt-3 mt-3" *ngIf="post.mediaFiles && post.mediaFiles.length > 0">
+                    <div class="media-thumb-row">
+                        <ng-container *ngFor="let file of post.mediaFiles">
+
+                            <!-- Image thumbnail -->
+                            <button *ngIf="file.mediaType === 'image'"
+                                class="media-thumb-btn"
+                                title="{{ file.originalName }}"
+                                (click)="openModal(file)">
+                                <img [src]="getMediaUrl(file.storagePath)"
+                                     [alt]="file.originalName"
+                                     class="media-thumb-img"
+                                     loading="lazy">
+                                <span class="media-thumb-type-badge">IMG</span>
+                            </button>
+
+                            <!-- Video thumbnail -->
+                            <button *ngIf="file.mediaType === 'video'"
+                                class="media-thumb-btn media-thumb-video"
+                                title="{{ file.originalName }}"
+                                (click)="openModal(file)">
+                                <span class="media-thumb-icon">🎬</span>
+                                <span class="media-thumb-label text-truncate">{{ file.originalName }}</span>
+                                <span class="media-thumb-type-badge">VID</span>
+                            </button>
+
+                            <!-- Audio thumbnail -->
+                            <button *ngIf="file.mediaType === 'audio'"
+                                class="media-thumb-btn media-thumb-audio"
+                                title="{{ file.originalName }}"
+                                (click)="openModal(file)">
+                                <span class="media-thumb-icon">🎵</span>
+                                <span class="media-thumb-label text-truncate">{{ file.originalName }}</span>
+                                <span class="media-thumb-type-badge">AUD</span>
+                            </button>
+
+                        </ng-container>
+                    </div>
+                </div>
             </div>
         </article>
+    </div>
+</div>
+
+<!-- ====================== MEDIA LIGHTBOX MODAL ====================== -->
+<div *ngIf="modalOpen && modalFile"
+     class="media-modal-backdrop"
+     (click)="onBackdropClick($event)">
+
+    <div class="media-modal-box">
+
+        <!-- Header -->
+        <div class="media-modal-header">
+            <span class="text-truncate small fw-semibold">{{ modalFile.originalName }}</span>
+            <button class="media-modal-close" (click)="closeModal()" title="Close">✕</button>
+        </div>
+
+        <!-- Image popup -->
+        <div class="media-modal-body" *ngIf="modalFile.mediaType === 'image'">
+            <img [src]="getMediaUrl(modalFile.storagePath)"
+                 [alt]="modalFile.originalName"
+                 class="media-modal-img">
+        </div>
+
+        <!-- Video popup -->
+        <div class="media-modal-body" *ngIf="modalFile.mediaType === 'video'">
+            <video [src]="getMediaUrl(modalFile.storagePath)"
+                   controls
+                   autoplay
+                   preload="metadata"
+                   class="media-modal-video">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- Audio popup -->
+        <div class="media-modal-body media-modal-audio-body" *ngIf="modalFile.mediaType === 'audio'">
+            <div class="fs-1 mb-3">🎵</div>
+            <p class="fw-semibold mb-3 text-center">{{ modalFile.originalName }}</p>
+            <audio [src]="getMediaUrl(modalFile.storagePath)"
+                   controls
+                   autoplay
+                   preload="metadata"
+                   class="w-100">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+
     </div>
 </div>

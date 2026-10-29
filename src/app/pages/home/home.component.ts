@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { BlogPost, BlogPostService } from 'src/app/services/blog-post.service';
+import { BlogPost, BlogPostService, MediaFile } from 'src/app/services/blog-post.service';
 
 @Component({
   selector: 'app-home',
@@ -8,13 +8,16 @@ import { BlogPost, BlogPostService } from 'src/app/services/blog-post.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  posts: BlogPost[] = []
+  posts: BlogPost[] = [];
 
   loading = true;
   errorMessage = '';
 
-  constructor(private blogService: BlogPostService, private sanitizer: DomSanitizer) { }
+  // --- Lightbox / Modal state ---
+  modalFile: MediaFile | null = null;
+  modalOpen = false;
 
+  constructor(private blogService: BlogPostService, private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.loadPosts();
@@ -34,10 +37,33 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+
   getSafeHtml(html: string): SafeHtml {
     // Angular's normal HTML binding sanitizes HTML.
     // Do not use bypassSecurityTrustHtml for user-authored posts.
     return this.sanitizer.sanitize(1, html) ?? '';
   }
 
+  getMediaUrl(storagePath: string): string {
+    return this.blogService.getMediaUrl(storagePath);
+  }
+
+  /** Open the lightbox modal for a clicked file */
+  openModal(file: MediaFile): void {
+    this.modalFile = file;
+    this.modalOpen = true;
+  }
+
+  /** Close the lightbox modal */
+  closeModal(): void {
+    this.modalOpen = false;
+    this.modalFile = null;
+  }
+
+  /** Close modal when clicking the backdrop */
+  onBackdropClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('media-modal-backdrop')) {
+      this.closeModal();
+    }
+  }
 }
