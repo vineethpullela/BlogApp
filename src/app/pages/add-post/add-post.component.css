@@ -28,3 +28,9 @@
   outline: none;
   box-sizing: border-box;
 }
+.list-group-item {
+  transition: background-color 0.15s ease-in-out;
+}
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}

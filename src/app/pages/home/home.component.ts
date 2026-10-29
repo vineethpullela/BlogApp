@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { BlogPostService } from 'src/app/services/blog-post.service';
+import { BlogPost, BlogPostService } from 'src/app/services/blog-post.service';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +8,7 @@ import { BlogPostService } from 'src/app/services/blog-post.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  posts: any[] = []
+  posts: BlogPost[] = []
 
   loading = true;
   errorMessage = '';
